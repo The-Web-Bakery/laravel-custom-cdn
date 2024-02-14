@@ -7,3 +7,8 @@ Install through composer
 <br><br>
 Publish config  
 ``php artisan vendor:publish --tag cdn-config``
+
+## Roadmap
+
+- [ ] Error handling
+- [ ] Storage driver
