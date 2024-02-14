@@ -10,12 +10,12 @@ use TheWebbakery\CDN\Collections\FolderCollection;
 class FolderResource {
     protected ?string $time = null;
 
-    protected string $name;
-    protected string $path;
+    public string $name;
+    public string $path;
 
-    protected array $details;
-    protected ?FolderCollection $folders;
-    protected ?FileCollection $files;
+    public array $details;
+    public ?FolderCollection $folders;
+    public ?FileCollection $files;
 
     public function __construct(string $name, string $path, array $details, ?FolderCollection $folders = null, ?FileCollection $files = null) {
         $this->name = $name;

@@ -9,9 +9,9 @@ use TheWebbakery\CDN\Collections\FileCollection;
 class FileResource {
     protected ?string $time = null;
 
-    protected string $path;
-    protected string $url;
-    protected array $details;
+    public string $path;
+    public string $url;
+    public array $details;
 
     public function __construct(string $path, string $url, array $details) {
         $this->path = $path;
@@ -40,5 +40,9 @@ class FileResource {
 
     public function delete() {
         return app(CDNClient::class)->files()->delete(path: $this->path);
+    }
+
+    public function getContent(): string|false {
+        return file_get_contents($this->url);
     }
 }

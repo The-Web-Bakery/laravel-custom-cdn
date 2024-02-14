@@ -2,6 +2,10 @@
 
 namespace TheWebbakery\CDN;
 
+use Illuminate\Contracts\Foundation\Application;
+use League\Flysystem\Filesystem;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 
 class CDNServiceProvider extends ServiceProvider
@@ -9,6 +13,18 @@ class CDNServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->offerPublishing();
+
+        Storage::extend(config('cdn.storage_driver_name'), function (Application $app, array $config) {
+            $adapter = new CDNAdapter(new CDNClient(
+                $config['id'] ?? null, $config['secret'] ?? null
+            ));
+
+            return new FilesystemAdapter(
+                new Filesystem($adapter, $config),
+                $adapter,
+                $config
+            );
+        });
     }
 
     public function register(): void

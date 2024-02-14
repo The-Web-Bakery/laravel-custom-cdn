@@ -2,8 +2,8 @@
 
 namespace TheWebbakery\CDN;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
 use TheWebbakery\CDN\Requests\ApplicationRequest;
 use TheWebbakery\CDN\Requests\FileRequest;
@@ -16,18 +16,24 @@ class CDNClient
 
 	protected PendingRequest $httpClient;
 
-	public function __construct()
+	public function __construct(string $appId = null, string $appSecret = null)
 	{
-		$this->httpClient = Http::baseUrl($this->getBaseUri())
-			->acceptJson()
-			->asJson()
-            ->asForm()
-			->withHeaders([
-				"X-Admin-Secret" => config("cdn.authentication.admin"),
-				"X-App-Id" => config("cdn.authentication.id"),
-				"X-App-Secret" => config("cdn.authentication.secret"),
-			]);
+		$this->httpClient = $this->buildClient(
+            $appId ?: config('cdn.authentication.id'),
+            $appSecret ?: config('cdn.authentication.secret'),
+        );
 	}
+
+    protected function buildClient(string $appId, string $appSecret) {
+        return Http::baseUrl($this->getBaseUri())
+            ->acceptJson()
+            ->throwIf(config('cdn.throw_exceptions'))
+            ->withHeaders([
+                "X-Admin-Secret" => config("cdn.authentication.admin"),
+                "X-App-Id" => $appId,
+                "X-App-Secret" => $appSecret,
+            ]);
+    }
 
 	public function getBaseUri(): string
 	{

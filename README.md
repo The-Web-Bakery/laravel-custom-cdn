@@ -10,5 +10,5 @@ Publish config
 
 ## Roadmap
 
-- [ ] Error handling
-- [ ] Storage driver
+- [x] Error handling
+- [x] Storage driver
