@@ -21,6 +21,7 @@ use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToRetrieveMetadata;
 use League\Flysystem\UnableToWriteFile;
 use TheWebbakery\CDN\CDNClient as Client;
+use TheWebbakery\CDN\Resources\FileResource;
 
 class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
 

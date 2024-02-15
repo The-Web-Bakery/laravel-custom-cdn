@@ -27,7 +27,7 @@ class CDNClient
     protected function buildClient(string $appId, string $appSecret) {
         return Http::baseUrl($this->getBaseUri())
             ->acceptJson()
-            ->throwIf(config('cdn.throw_exceptions'))
+            ->throwIf(fn (Response $response) => config('cdn.throw_exceptions') && $response->serverError())
             ->withHeaders([
                 "X-Admin-Secret" => config("cdn.authentication.admin"),
                 "X-App-Id" => $appId,
