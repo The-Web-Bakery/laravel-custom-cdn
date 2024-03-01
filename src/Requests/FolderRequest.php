@@ -41,10 +41,11 @@ class FolderRequest
     }
 
 
-	public function all(string $path = null): ?FolderResource
+	public function all(string $path = null, bool $recursive = false): ?FolderResource
 	{
 		$request = $this->httpClient->get('/api/files/folders', [
-            'path' => $path
+            'path' => $path,
+            'recursive' => $recursive
         ]);
 
         return FolderResource::make(

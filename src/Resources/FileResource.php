@@ -9,11 +9,11 @@ use TheWebbakery\CDN\Collections\FileCollection;
 class FileResource {
     protected ?string $time = null;
 
-    public string $path;
-    public string $url;
-    public array $details;
+    public ?string $path;
+    public ?string $url;
+    public ?array $details;
 
-    public function __construct(string $path, string $url, array $details) {
+    public function __construct(?string $path, ?string $url, ?array $details) {
         $this->path = $path;
         $this->url = $url;
         $this->details = $details;
@@ -35,7 +35,7 @@ class FileResource {
             $item = $item->toArray();
         }
 
-        return new static($item['path'], $item['url'], $item['details']);
+        return new static($item['path'] ?? null, $item['url'] ?? null, $item['details'] ?? null);
     }
 
     public function delete() {

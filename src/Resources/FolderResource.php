@@ -10,14 +10,14 @@ use TheWebbakery\CDN\Collections\FolderCollection;
 class FolderResource {
     protected ?string $time = null;
 
-    public string $name;
-    public string $path;
+    public ?string $name;
+    public ?string $path;
 
-    public array $details;
+    public ?array $details;
     public ?FolderCollection $folders;
     public ?FileCollection $files;
 
-    public function __construct(string $name, string $path, array $details, ?FolderCollection $folders = null, ?FileCollection $files = null) {
+    public function __construct(?string $name, ?string $path, ?array $details, ?FolderCollection $folders = null, ?FileCollection $files = null) {
         $this->name = $name;
         $this->path = $path;
         $this->details = $details;
@@ -29,7 +29,7 @@ class FolderResource {
         $collection = new FolderCollection();
         foreach($items as $item) {
             $collection->add(
-                static::make($item)
+                static::make($item, $item['folders'], $item['files'])
             );
         }
 
@@ -41,7 +41,7 @@ class FolderResource {
             $item = $item->toArray();
         }
 
-        return new static($item['name'], $item['path'], $item['details'], $folders, $files);
+        return new static($item['name'] ?? null, $item['path'] ?? null, $item['details'] ?? null, $folders, $files);
     }
 
     public function delete() {

@@ -6,10 +6,12 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use League\Flysystem\ChecksumAlgoIsNotSupported;
 use League\Flysystem\ChecksumProvider;
 use League\Flysystem\Config;
+use League\Flysystem\DirectoryAttributes;
 use League\Flysystem\FileAttributes;
 use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\InvalidVisibilityProvided;
+use League\Flysystem\StorageAttributes;
 use League\Flysystem\UnableToCheckExistence;
 use League\Flysystem\UnableToCopyFile;
 use League\Flysystem\UnableToCreateDirectory;
@@ -53,11 +55,14 @@ class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
      * @throws UnableToWriteFile
      * @throws FilesystemException
      */
-    public function write(string $path, string $contents, Config $config): void
+    public function write(string $path, $contents, Config $config): void
     {
+        if($filename = $config->get('filename')) {
+            $path = str_replace($filename, '', $path);
+        }
         $this->client->files()->upload(
             file: $contents,
-            filename: $config->get('filename') ?? null,
+            filename: $filename ?? null,
             path: $path,
         );
     }
@@ -189,9 +194,43 @@ class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
      */
     public function listContents(string $path, bool $deep): iterable
     {
-        dd(
-            "TODO (files & folders??)"
-        );
+//        if(!str_starts_with($path, '/')) {
+//            $path = sprintf('/%s', $path);
+//        }
+
+        $list = $this->client->folders()->all($path, recursive: $deep);
+
+        foreach ($list->files as $item) {
+            yield $this->normalizeObject($item);
+        }
+    }
+
+    /**
+     * @param array $item Files and folders from listContents.
+     *
+     * @return StorageAttributes
+     */
+    protected function normalizeObject(object $item): StorageAttributes
+    {
+        return match ($item->type) {
+
+            'folder' => new DirectoryAttributes(
+                $item->folderPath,
+                null,
+                strtotime($item->updatedAt),
+                ['id'   => $item->folderId]
+            ),
+
+            'file' => new FileAttributes(
+                $item->filePath,
+                $item->size,
+                null,
+                strtotime($item->updatedAt),
+                $item->mime ?? null,
+                ['id'   => $item->fileId]
+            )
+
+        };
     }
 
     /**
@@ -231,6 +270,6 @@ class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
 
     public function getUrl(string $path): ?string
     {
-        return $this->client->files()->find($path)->url;
+        return $this->client->files()->find($path)?->url;
     }
 }

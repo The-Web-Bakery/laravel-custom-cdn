@@ -19,7 +19,7 @@ class FileRequest
 		$this->httpClient = $client;
 	}
 
-	public function upload(UploadedFile|string $file, ?string $filename = null, ?string $path = null): FileResource
+	public function upload(mixed $file, ?string $filename = null, ?string $path = null): FileResource
     {
         if(is_a($file, UploadedFile::class)) {
             if(is_null($filename)) {
@@ -31,6 +31,7 @@ class FileRequest
 
         if(is_null($filename)) {
             $filename = last(explode('/', $path));
+            $path = str_replace('/'.$filename, '', $path);
         }
 
 		$request = $this->httpClient->send('POST', '/api/files/upload', [
