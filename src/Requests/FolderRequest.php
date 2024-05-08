@@ -11,27 +11,29 @@ use TheWebbakery\CDN\Resources\FolderResource;
 class FolderRequest
 {
 
-	private PendingRequest $httpClient;
+    private PendingRequest $httpClient;
 
-	public function __construct(PendingRequest $client)
-	{
-		$this->httpClient = $client;
-	}
+    public function __construct(PendingRequest $client)
+    {
+        $this->httpClient = $client;
+    }
 
-	public function delete(string $path): bool
-	{
-		$request = $this->httpClient->delete(sprintf('/api/files?path=%s', $path));
+    public function delete(string $path): bool
+    {
+        $request = $this->httpClient->delete(sprintf('/api/files/folder?path=%s', $path));
 
         return $request->collect('ok') && $request->successful();
-	}
+    }
 
-    public function clearAll(): bool {
+    public function clearAll(): bool
+    {
         $request = $this->httpClient->delete('/api/files/clear');
 
         return $request->collect('ok') && $request->successful();
     }
 
-    public function create(string $name, string $path = '') {
+    public function create(string $name, string $path = '')
+    {
         $request = $this->httpClient->post('/api/files/folder', [
             'name' => $name,
             'path' => $path,
@@ -41,9 +43,9 @@ class FolderRequest
     }
 
 
-	public function all(string $path = null, bool $recursive = false): ?FolderResource
-	{
-		$request = $this->httpClient->get('/api/files/folders', [
+    public function all(string $path = null, bool $recursive = false): ?FolderResource
+    {
+        $request = $this->httpClient->get('/api/files/folders', [
             'path' => $path,
             'recursive' => $recursive
         ]);
@@ -53,5 +55,5 @@ class FolderRequest
             FolderResource::collection($request->collect('folders')),
             FileResource::collection($request->collect('files')),
         );
-	}
+    }
 }

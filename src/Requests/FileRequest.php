@@ -12,29 +12,29 @@ use TheWebbakery\CDN\Resources\FileResource;
 class FileRequest
 {
 
-	private PendingRequest $httpClient;
+    private PendingRequest $httpClient;
 
-	public function __construct(PendingRequest $client)
-	{
-		$this->httpClient = $client;
-	}
-
-	public function upload(mixed $file, ?string $filename = null, ?string $path = null): FileResource
+    public function __construct(PendingRequest $client)
     {
-        if(is_a($file, UploadedFile::class)) {
-            if(is_null($filename)) {
+        $this->httpClient = $client;
+    }
+
+    public function upload(mixed $file, ?string $filename = null, ?string $path = null): FileResource
+    {
+        if (is_a($file, UploadedFile::class)) {
+            if (is_null($filename)) {
                 $filename = $file->getClientOriginalName();
             }
 
             $file = $file->getContent();
         }
 
-        if(is_null($filename)) {
+        if (is_null($filename)) {
             $filename = last(explode('/', $path));
-            $path = str_replace('/'.$filename, '', $path);
+            $path = str_replace('/' . $filename, '', $path);
         }
 
-		$request = $this->httpClient->send('POST', '/api/files/upload', [
+        $request = $this->httpClient->send('POST', '/api/files/upload', [
             'multipart' => [
                 [
                     'name' => 'filename',
@@ -54,21 +54,22 @@ class FileRequest
         ]);
 
         return FileResource::make($request->collect());
-	}
+    }
 
-	public function delete(string $path): bool
-	{
-		$request = $this->httpClient->delete(sprintf('/api/files?path=%s', $path));
+    public function delete(string $path): bool
+    {
+        $request = $this->httpClient->delete(sprintf('/api/files?path=%s', $path));
 
         return $request->collect('ok') && $request->successful();
-	}
+    }
 
-    public function find(string $path): ?FileResource {
+    public function find(string $path): ?FileResource
+    {
         $request = $this->httpClient->get('/api/file', [
             'path' => $path
         ]);
 
-        if($request->notFound()) {
+        if ($request->notFound()) {
             return null;
         }
 
@@ -76,10 +77,10 @@ class FileRequest
     }
 
 
-	public function all(): ?FileCollection
-	{
-		$request = $this->httpClient->get('/api/files');
+    public function all(): ?FileCollection
+    {
+        $request = $this->httpClient->get('/api/files');
 
         return FileResource::collection($request->collect('files'));
-	}
+    }
 }

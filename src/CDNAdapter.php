@@ -25,11 +25,13 @@ use League\Flysystem\UnableToWriteFile;
 use TheWebbakery\CDN\CDNClient as Client;
 use TheWebbakery\CDN\Resources\FileResource;
 
-class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
+class CDNAdapter implements FilesystemAdapter, ChecksumProvider
+{
 
     private Client $client;
 
-    public function __construct(Client $client) {
+    public function __construct(Client $client)
+    {
         $this->client = $client;
     }
 
@@ -57,7 +59,7 @@ class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
      */
     public function write(string $path, $contents, Config $config): void
     {
-        if($filename = $config->get('filename')) {
+        if ($filename = $config->get('filename')) {
             $path = str_replace($filename, '', $path);
         }
         $this->client->files()->upload(
@@ -86,7 +88,7 @@ class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
     {
         $file = $this->client->files()->find($path);
 
-        if(is_null($file)) {
+        if (is_null($file)) {
             throw new FileNotFoundException($path);
         }
 
@@ -119,9 +121,7 @@ class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
      */
     public function deleteDirectory(string $path): void
     {
-        dd(
-            "TODO"
-        );
+        $this->client->folders()->delete($path);
     }
 
     /**
@@ -194,9 +194,9 @@ class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
      */
     public function listContents(string $path, bool $deep): iterable
     {
-//        if(!str_starts_with($path, '/')) {
-//            $path = sprintf('/%s', $path);
-//        }
+        //        if(!str_starts_with($path, '/')) {
+        //            $path = sprintf('/%s', $path);
+        //        }
 
         $list = $this->client->folders()->all($path, recursive: $deep);
 
@@ -229,7 +229,6 @@ class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
                 $item->mime ?? null,
                 ['id'   => $item->fileId]
             )
-
         };
     }
 
@@ -273,3 +272,4 @@ class CDNAdapter implements FilesystemAdapter, ChecksumProvider {
         return $this->client->files()->find($path)?->url;
     }
 }
+
