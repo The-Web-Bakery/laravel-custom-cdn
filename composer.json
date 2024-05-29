@@ -18,10 +18,10 @@
         "php": ">=8.2",
         "league/flysystem": "^3.7.0",
         "guzzlehttp/guzzle": "^7.8",
-        "illuminate/contracts": "^10.39",
-        "illuminate/container": "^10.39",
-        "illuminate/support": "^10.39",
-        "illuminate/http": "^10.39"
+        "illuminate/contracts": "^10.39 || ^11.0",
+        "illuminate/container": "^10.39 || ^11.0",
+        "illuminate/support": "^10.39 || ^11.0",
+        "illuminate/http": "^10.39 || ^11.0"
     },
     "extra": {
         "laravel": {
